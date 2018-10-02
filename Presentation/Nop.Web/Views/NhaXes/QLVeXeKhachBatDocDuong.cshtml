@@ -1,0 +1,60 @@
+﻿@model Nop.Web.Models.NhaXes.NguonVeListModel
+@using Nop.Web.Models.NhaXes
+@{
+    Layout = "~/Views/Shared/_NhaXeLayout.cshtml";
+    //page title
+    ViewBag.Title = "Quản lý phơi vé khách bắt dọc đường";
+}
+
+@Html.Partial("_QLVeXeKhachBatDocDuongChinhSua", Model)
+<script>
+        $(document).ready(function(){
+            $("#btnCapNhat").click(function(){
+                var DiemDonDiId =$("#@Html.FieldIdFor(model=>model.DiemDonDiId)").val();
+                var DiemDonDenId =$("#@Html.FieldIdFor(model=>model.DiemDonDenId)").val();
+                var ChuyenDiId=$("#@Html.FieldIdFor(model=>model.ChuyenDiId)").val();
+                var NgayTao =$("#@Html.FieldIdFor(model=>model.NgayTao)").val();
+                var SoLuongVe = $("#@Html.FieldIdFor(model=>model.SoLuongVe)");
+                if(DiemDonDiId <=0){
+                    alert("Bạn chưa chọn điểm đón đi");
+                    return;
+                }
+                if(DiemDonDenId <=0){
+                    alert("Bạn chưa chọn điểm đón đến");
+                    return;
+                }
+                if(ChuyenDiId <=0){
+                    alert("Bạn chưa chọn chuyến đi");
+                    return;
+                }
+                if(SoLuongVe <=0){
+                    alert("Bạn chưa chọn số lượng vé");
+                    return;
+                }
+                var _data={
+                    DiemDonDiId :$("#@Html.FieldIdFor(model=>model.DiemDonDiId)").val(),
+                    DiemDonDenId:$("#@Html.FieldIdFor(model=>model.DiemDonDenId)").val(),
+                    ChuyenDiId:$("#@Html.FieldIdFor(model=>model.ChuyenDiId)").val(),
+                    NgayTao :$("#@Html.FieldIdFor(model=>model.NgayTao)").val(),
+                    SoLuongVe :$("#@Html.FieldIdFor(model=>model.SoLuongVe)").val()
+                }
+                $.ajax({
+                    type: "POST",
+                    data: _data,
+                    dataType: 'html',
+                    url: "@(Url.Action("ThemMoiPhoiVeKhachBatDocDuong", "NhaXes"))",
+                    success: function (data) {
+                        if (data == "OK") {
+                            alert("Cập nhật thành công");
+                            location.reload();
+                        }
+                        else {
+                            alert("Bạn chon điểm đi, điểm đón chưa chính xác");
+                        }
+                    }
+                });
+            });
+        })
+</script>
+
+

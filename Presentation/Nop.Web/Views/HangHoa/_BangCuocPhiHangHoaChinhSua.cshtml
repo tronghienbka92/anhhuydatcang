@@ -1,0 +1,133 @@
+﻿@model Nop.Web.Models.ChuyenPhatNhanh.BangGiaCuocHangHoaModel
+@Html.ValidationSummary(false)
+@Html.HiddenFor(model => model.Id)
+
+<div id="modeldetail-edit">
+    <ul>
+        <li @Html.RenderSelectedTabIndex(0, GetSelectedTabIndex())>
+            @T("ChonVe.NhaXe.TabThongTin")
+        </li>
+        @*<li @Html.RenderSelectedTabIndex(3, GetSelectedTabIndex())>
+                Cấu hình giá vé
+            </li>*@
+    </ul>
+    <div>
+        @TabInfo()
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $("#modeldetail-edit").kendoTabStrip({
+            animation: {
+                open: {
+                    effects: "fadeIn"
+                }
+            },
+            select: tabstrip_on_tab_select
+        });
+    });
+</script>
+
+@*save selected tab index*@
+<input type="hidden" id="selected-tab-index" name="selected-tab-index" value="@(GetSelectedTabIndex())">
+@helper TabInfo()
+{
+    <table class="adminContent">
+        <tr>
+            <td class="adminTitle">
+                Tên hàng hóa:
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.TenHangHoa)
+                @Html.ValidationMessageFor(model => model.TenHangHoa)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                Cước phí:
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.GiaCuoc)
+                @Html.ValidationMessageFor(model => model.GiaCuoc)
+            </td>
+        </tr>
+        <tr>
+            <td><input type="button" id="btnCapNhat" class="btn btn-primary" value="Cập nhật"/></td>
+        </tr>
+    </table>
+    <script>
+        $(document).ready(function () {
+            $("#btnCapNhat").click(function () {
+                var TenHangHoa = $("#@Html.FieldIdFor(m => m.TenHangHoa)").val();
+                var GiaCuoc = $("#@Html.FieldIdFor(m => m.GiaCuoc)").val();
+                if (TenHangHoa == "") {
+                    alert("Bạn chưa nhập tên hàng hóa");
+                    return;
+                }
+                if (GiaCuoc <= 0) {
+                    alert("Bạn chưa nhập giá cước");
+                    return;
+                }              
+                var _data = {
+                    TenHangHoa: TenHangHoa,
+                    GiaCuoc: GiaCuoc
+                }
+                $.ajax({
+                    type: "POST",
+                    data: _data,
+                    dataType: 'html',
+                    url: "@(Url.Action("BangCuocPhiThemMoi", "HangHoa"))",
+                    success: function (data) {
+                        if (data == "OK") {
+                            alert("Cập nhật thành công");
+                            location.reload();
+                        }
+                        else {
+                            alert(data);
+                        }
+                    }
+            });
+        });    
+        })
+    </script>
+}
+<style>
+    .BangGiaVe {
+        width: 100%;
+        padding: 2px;
+    }
+
+        .BangGiaVe td {
+            border: 1px solid #A9A2A2;
+            text-align: center;
+            height: 50px;
+        }
+
+    .SuaGiaVe {
+        float: right;
+        background: #0e97f2;
+        background-image: -webkit-linear-gradient(top, #0e97f2, #1c7dba);
+        background-image: -moz-linear-gradient(top, #0e97f2, #1c7dba);
+        background-image: -ms-linear-gradient(top, #0e97f2, #1c7dba);
+        background-image: -o-linear-gradient(top, #0e97f2, #1c7dba);
+        background-image: linear-gradient(to bottom, #0e97f2, #1c7dba);
+        -webkit-border-radius: 28;
+        -moz-border-radius: 28;
+        border-radius: 28px;
+        font-family: Arial;
+        color: #ffffff;
+        font-size: 13px;
+        padding: 8px 13px 7px 15px;
+        text-decoration: none;
+    }
+
+        .SuaGiaVe:hover {
+            background: #3cb0fd;
+            background-image: -webkit-linear-gradient(top, #3cb0fd, #3498db);
+            background-image: -moz-linear-gradient(top, #3cb0fd, #3498db);
+            background-image: -ms-linear-gradient(top, #3cb0fd, #3498db);
+            background-image: -o-linear-gradient(top, #3cb0fd, #3498db);
+            background-image: linear-gradient(to bottom, #3cb0fd, #3498db);
+            text-decoration: none;
+        }
+</style>

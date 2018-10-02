@@ -1,0 +1,265 @@
+﻿@model Nop.Web.Models.NhaXes.NguonVeListModel
+@using Nop.Web.Models.NhaXes
+@using Nop.Core.Infrastructure
+@using Nop.Web.Framework.Events
+@using Nop.Services.Events
+@Html.ValidationSummary(false)
+<div id="modeldetail-edit">
+    <ul>
+        <li @Html.RenderSelectedTabIndex(0, GetSelectedTabIndex())>
+            @T("ChonVe.NhaXe.TabThongTin")
+        </li>
+    </ul>
+    <div>
+        @TabInfo()
+    </div>
+</div>
+
+@{
+    //custom tabs
+    var eventMessage = new AdminTabStripCreated(this.Html, "modeldetail-edit");
+    EngineContext.Current.Resolve<IEventPublisher>().Publish(eventMessage);
+    foreach (var eventBlock in eventMessage.BlocksToRender)
+    {
+        @eventBlock
+    }
+}
+<script>
+    $(document).ready(function () {
+        $("#modeldetail-edit").kendoTabStrip({
+            animation: {
+                open: {
+                    effects: "fadeIn"
+                }
+            },
+            select: tabstrip_on_tab_select
+        });
+
+    });
+</script>
+
+@*save selected tab index*@
+<input type="hidden" id="selected-tab-index" name="selected-tab-index" value="@(GetSelectedTabIndex())">
+@helper TabInfo()
+{
+    <table class="adminContent">
+        <tr style="display:none;">
+            <td>Ngày tạo:</td>
+            <td>
+                @Html.EditorFor(model => model.NgayTao)
+            </td>
+        </tr>
+        @*<tr>
+        <td class="adminTitle">
+            Điểm đi:
+        </td>
+        <td class="adminData">
+            <input id="cbbSearcDiemDonDi" value="@Model.DiemDonDi.TenDiemDon" style="width:180px" />
+            @Html.HiddenFor(model => model.DiemDonDiId)
+        </td>
+        <script>
+            $(document).ready(function () {
+                $('#cbbSearcDiemDonDi').kendoComboBox({
+                    placeholder: "Điểm đón đi",
+                    dataTextField: "TenDiemDon",
+                    dataValueField: "Id",
+                    filter: "contains",
+                    autoBind: false,
+                    minLength: 5,
+                    dataSource: {
+                        type: "json",
+                        serverFiltering: true,
+                        transport: {
+                            read: {
+                                url: "@Html.Raw(Url.Action("CbbListDiemDon", "NhaXes"))",
+                                data: dataSearcDiemDonDi
+                            }
+                        }
+                    },
+                    change: onChangeGui
+                });
+                function onChangeGui(e) {
+                    //alert(e.index);
+                    var DataItem = this.dataItem();
+                    $("#@Html.FieldIdFor(model => model.DiemDonDiId)").val(DataItem.Id);
+                    $('#cbbSearcDiemDonDi').data("kendoComboBox").input.focus();
+                }
+
+                function dataSearcDiemDonDi() {
+                    var _diemdon = $('#cbbSearcDiemDonDi').data("kendoComboBox").text();
+                    return {
+                        SearchDiemDon: _diemdon
+                    };
+                }
+            });
+        </script>
+
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            Điểm đến:
+        </td>
+        <td class="adminData">
+            <input id="cbbSearcDiemDonDen" value="" style="width:180px" />
+            @Html.HiddenFor(model => model.DiemDonDenId)
+        </td>
+        <script>
+            $(document).ready(function () {
+                $('#cbbSearcDiemDonDen').kendoComboBox({
+                    placeholder: "Điểm đón đến",
+                    dataTextField: "TenDiemDon",
+                    dataValueField: "Id",
+                    filter: "contains",
+                    autoBind: false,
+                    minLength: 5,
+                    dataSource: {
+                        type: "json",
+                        serverFiltering: true,
+                        transport: {
+                            read: {
+                                url: "@Html.Raw(Url.Action("CbbListDiemDon", "NhaXes"))",
+                                data: dataSearcDiemDonDen
+                            }
+                        }
+                    },
+                    change: onChangeGui
+                });
+                function onChangeGui(e) {
+                    //alert(e.index);
+                    var DataItem = this.dataItem();
+                    $("#@Html.FieldIdFor(model => model.DiemDonDenId)").val(DataItem.Id);
+                    $('#cbbSearcDiemDonDen').data("kendoComboBox").input.focus();
+                }
+
+                function dataSearcDiemDonDen() {
+                    var _diemdon = $('#cbbSearcDiemDonDen').data("kendoComboBox").text();
+                    return {
+                        SearchDiemDon: _diemdon
+                    };
+                }
+            });
+        </script>
+    </tr>*@
+        <tr>
+            <td class="adminTitle">
+                Điểm đón đi:
+            </td>
+            <td class="adminData">
+                @Html.DropDownListFor(model => model.DiemDonDiId, Model.DiemDonDis)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                Điểm đón đến:
+            </td>
+            <td class="adminData">
+                @Html.DropDownListFor(model => model.DiemDonDenId, Model.DiemDonDens)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                Giá vé:
+            </td>
+            <td>
+                <span id="GiaTien">0 đ</span>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="padding-top:10px;">
+                Chuyến đi: <input id="cbbSearchChuyenDi" value="" style="width:100%" />
+                @Html.HiddenFor(model => model.ChuyenDiId)
+                <script>
+                    $(document).ready(function () {
+                        $("#@Html.FieldIdFor(m=>m.DiemDonDenId)").change(function () {
+                            var DiemDonId = $("#@Html.FieldIdFor(m=>m.DiemDonDiId)").val();
+                            var DiemDenId = $("#@Html.FieldIdFor(m=>m.DiemDonDenId)").val();
+                            if (DiemDonId > 0 && DiemDenId > 0)
+                                GetGiaVeBatDocDuong(DiemDonId, DiemDenId);
+                        });
+                        $("#@Html.FieldIdFor(m=>m.DiemDonDiId)").change(function () {
+                            var DiemDonId = $("#@Html.FieldIdFor(m=>m.DiemDonDiId)").val();
+                            var DiemDenId = $("#@Html.FieldIdFor(m=>m.DiemDonDenId)").val();
+                            if (DiemDonId > 0 && DiemDenId > 0)
+                                GetGiaVeBatDocDuong(DiemDonId, DiemDenId);
+                        });
+                        function GetGiaVeBatDocDuong(DiemDonId, DiemDenId) {
+                            $.ajax({
+                                cache: false,
+                                type: "GET",
+                                url: "@(Url.Action("GetGiaVeBatDocDuong", "NhaXes"))",
+                                data: { "DiemDonId": DiemDonId, "DiemDenId": DiemDenId },
+                                    success: function (data) {
+                                        var html = data + " đ";
+                                        $("#GiaTien").html(html);
+                                    },
+                                    error: function (xhr, ajaxOptions, thrownError) {
+                                        alert('Failed to retrieve states.');
+                            }
+                            });
+                        }
+                        function dataSearchChuyenDi() {
+                            var _chuyendi = $("#cbbSearchChuyenDi").data("kendoComboBox").text();
+                            return {
+                                chuyendi: _chuyendi,
+                                DiemDonDiId: $("#@Html.FieldIdFor(model=>model.DiemDonDiId)").val(),
+                                DiemDonDenId: $("#@Html.FieldIdFor(model=>model.DiemDonDenId)").val(),
+                                NgayTao: $("#NgayTao").val()
+                            };
+                        }
+                        var refesh = $("#cbbSearchChuyenDi").kendoComboBox({
+                            placeholder: "Chuyến đi",
+                            dataTextField: "ChuyenDi",
+                            dataValueField: "Id",
+                            filter: "contains",
+                            autoBind: true,
+                            minLength: 2,
+                            dataSource: {
+                                type: "json",
+                                serverFiltering: true,
+                                transport: {
+                                    read: {
+                                        url: "@Html.Raw(Url.Action("CBBChuyenDi", "NhaXes"))",
+                                                        data: dataSearchChuyenDi
+                                                    }
+                                                }
+                                            },
+                                            change: onChangeChuyenDi
+                                        });
+                                        function onChangeChuyenDi(e) {
+                                            var DataItem = this.dataItem();
+                                            $("#@Html.FieldIdFor(model => model.ChuyenDiId)").val(DataItem.Id);
+                                            var _chuyendiid =  $("#cbbSearchChuyenDi").val();
+                                            if (_chuyendiid == 0)
+                                                return;
+                                            $.ajax({
+                                                cache: false,
+                                                type: "GET",
+                                                url: "@(Url.Action("getPhuXeChuyenDi", "HangHoa"))",
+                                                data: { "ChuyenDiId": _chuyendiid },
+                                                success: function (data) {
+
+                                                },
+                                                error: function (xhr, ajaxOptions, thrownError) {
+                                                    alert('Failed to retrieve states.');
+                                                }
+                                            });
+                        }
+                    });
+                </script>
+
+            </td>
+
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                Số lượng:
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.SoLuongVe)
+            </td>
+        </tr>
+        <tr>
+            <td><input type="button" id="btnCapNhat" class="btn btn-primary" value="Cập nhật" /></td>
+        </tr>
+    </table>
+}

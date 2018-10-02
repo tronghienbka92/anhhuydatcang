@@ -1,0 +1,8 @@
+﻿@model Nop.Web.Models.ChuyenPhatNhanh.BangGiaCuocHangHoaModel
+@{
+    Layout = "~/Views/Shared/_NhaXeLayout.cshtml";
+    //page title
+    ViewBag.Title = T("ChonVe.NhaXe.HanhTrinh.TaoMoi").Text;
+}
+
+    @Html.Partial("_BangCuocPhiHangHoaChinhSua", Model)

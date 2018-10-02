@@ -1,0 +1,22 @@
+﻿@model Nop.Web.Models.NhaXes.NguonVeListModel
+@using Nop.Web.Models.NhaXes
+@{
+    Layout = "~/Views/Shared/_NhaXeLayout.cshtml";
+    //page title
+    ViewBag.Title = T("ChonVe.NhaXe.LichTrinh.Sua").Text;
+}
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "LichTrinh-form" }))
+{
+    <div class="section-header">
+        <div class="title">
+            <img src="@Url.Content("~/Content/chonve/nxmenu/hanhtrinhlichtrinh.png")" alt="" />
+            @T("ChonVe.NhaXe.LichTrinh.Sua") - @Model.Id @Html.ActionLink("(" + T("ChonVe.NhaXe.LichTrinh.BackToList") + ")", "NguonVeXeBatDocDuongList")
+        </div>
+        <div class="options">
+            <input type="submit" name="save" class="k-button" value="@T("Admin.Common.Save")" />
+            <span id="NguonVeXeBatDocDuongXoa" class="k-button">@T("Admin.Common.Delete")</span>
+        </div>
+    </div>
+    @Html.Partial("_VeXeBatDocDuongChinhSua", Model)
+}
+@Html.DeleteConfirmation("NguonVeXeBatDocDuongXoa", "NguonVeXeBatDocDuongXoa")
